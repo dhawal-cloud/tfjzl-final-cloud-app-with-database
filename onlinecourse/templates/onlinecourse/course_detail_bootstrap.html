@@ -1,56 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-     {% load static %}
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <meta charset="UTF-8">
-</head>
+{% extends "onlinecourse/base.html" %}
 
-<body>
-    <!-- Navigation bar -->
-    <nav class="navbar navbar-light bg-light">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                  <a class="navbar-brand" href="{% url 'onlinecourse:index' %}">Home</a>
-            </div>
-            <ul class="nav navbar-nav navbar-right">
-                {% if user.is_authenticated %}
-                <li>
-                    <a class="btn btn-link" href="#">{{ user.first_name }}({{ user.username }})</a>
-                    <a class="btn btn-link" href="{% url 'onlinecourse:logout' %}">Logout</a>
-                </li>
-                {% else %}
-                <li>
-                    <form class="form-inline" action="{% url 'onlinecourse:login' %}" method="post">
-                        {% csrf_token %}
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Username" name="username" >
-                            <input type="password" class="form-control" placeholder="Username" name="psw" >
-                            <button class="btn btn-primary" type="submit">Login</button>
-                            <a class="btn btn-link" href="{% url 'onlinecourse:registration' %}">Sign Up</a>
-                        </div>
-                    </form>
-                </li>
-                {% endif %}
-            </ul>
+{% block title %}
+    Course Details
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">{{ course.name }}</h2>
         </div>
-    </nav>
 
-    <!-- Page content -->
-    <div class="container-fluid">
-            <h2>{{ course.name }}</h2>
-            <div class="card-columns-vertical">
-                {% for lesson in course.lesson_set.all %}
-                    <div class="card mt-1">
-                        <div class="card-header"><h5>Lesson {{lesson.order|add:1}}: {{lesson.title}}</h5></div>
-                        <div class="card-body">{{lesson.content}}</div>
+        <div class="card-body">
+            <h4 class="mb-3">Course Description</h4>
+            <p>{{ course.description }}</p>
+
+            <hr>
+
+            <h4 class="mb-3">Course Lessons</h4>
+
+            {% for lesson in course.lesson_set.all %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            {{ forloop.counter }}. {{ lesson.title }}
+                        </h5>
+
+                        <p class="card-text">
+                            {{ lesson.content }}
+                        </p>
                     </div>
-                {% endfor %}
-            </div>
-            <!-- Course detail template changes go here -->
+                </div>
+            {% empty %}
+                <div class="alert alert-info">
+                    No lessons are available for this course.
+                </div>
+            {% endfor %}
+
+            <a href="{% url 'onlinecourse:course_list' %}"
+               class="btn btn-secondary mt-3">
+                Back to Courses
+            </a>
+        </div>
     </div>
-</body>
-</html>
+
+</div>
+{% endblock %}
